@@ -1,17 +1,20 @@
 from flask import Flask, request
-from database import createUser, createChat
+from database import createUser, createChat, addUser
 
 app = Flask(__name__)
 
 
-@app.route("/user/create/<username>")
-def createUsername(username):
-    return createUser(username)
+@app.route("/user/create/", methods=['GET', 'POST'])
+def createUsername():
+    return createUser()
 
-@app.route('/chat/create') 
+@app.route('/chat/create', methods=['GET', 'POST']) 
 def createChats():
     return createChat()
 
+@app.route('/chat/<chat_id>/adduser', methods=['GET', 'POST']) 
+def createChats():
+    return addUser()
 
 
 
