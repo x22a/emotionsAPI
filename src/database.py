@@ -2,8 +2,8 @@ from pymongo import MongoClient
 from errorHandler import jsonErrorHandler
 from bson.json_util import dumps
 from flask import Flask, request
-import re
 from bson.objectid import ObjectId
+import re
 
 # Connect to the database
 client = MongoClient("mongodb://localhost:27017")
@@ -51,6 +51,8 @@ def createChat():
                 dontExist.append(userna)
             else:
                 exist.append(userna)
+        if exist == []:
+            raise ValueError("There is no valid users, please go to '/user/create' to add a new user first")
         for userna in exist:
             toInsert["Users"][f"{userna}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
             
@@ -64,7 +66,7 @@ def createChat():
               </form>'''
 
 @jsonErrorHandler
-def addUser(chat_id):
+def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
     if request.method == 'POST':  #this block is only entered when the form is submitted
         usernames = request.form.get('usernames')
         usernames = usernames.split(",")
@@ -77,15 +79,50 @@ def addUser(chat_id):
                 dontExist.append(userna)
             else:
                 exist.append(userna)
+        if exist == []:
+            raise ValueError("There is no valid users, please go to '/user/create' to add a new user first")
         for userna in exist:
-            toUpdate["Users"][f"{userna}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
-            chatCol.update({"_id": ObjectId(chat_id)}, {"$set": {f"Users.{userna}" : list(userCol.find({"name": userna}, {"_id" : 1}))[0]}})
+            #toUpdate["Users"][f"{userna}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
+            chatCol.update_one({"_id": ObjectId(chat_id)}, {"$set": {f"Users.{userna}" : list(userCol.find({"name": userna}, {"_id" : 1}))[0]}})
             
         
         return '''User added'''
 
     return '''<form method="POST">
                   Usernames: <input type="text" name="usernames"><br>
+                  <input type="submit" value="Submit"><br>
+              </form>'''
+
+@jsonErrorHandler
+def addMessage(chat_id):
+    if request.method == 'POST':  #this block is only entered when the form is submitted
+        username = request.form.get('user')
+        message = request.form.get('message')
+        exist = []
+        dontExist = []
+        toUpdate = {"Texts":{}}
+        if list(chatCol.find({f"Users.{username}._id": list(userCol.find({"name": f"{username}"}, {"_id" : 1}))[0]["_id"]}, {"_id" : 1})) == []:
+            dontExist.append(username)
+        else:
+            exist.append(username)
+        if exist == []:
+            raise ValueError("The user is not in the chat, go to '/chat/<chat_id>/adduser' to add an user to this chat")
+            #toUpdate["Texts"][f"msg{n}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
+        try:
+            exText = list(chatCol.find({"_id": ObjectId(chat_id)}).sort([("Texts", 1)]).limit(1))[0]["Texts"].keys()
+            exText = list(exText)[-1]
+            exText = list(exText)[-1]
+            lastEl = int(exText)
+        except:
+            lastEl = 0
+        print(lastEl)
+        chatCol.update_one({"_id": ObjectId(chat_id)}, {"$set": {f"Texts.msg{lastEl+1}" : {'name': username, 'text': message}}})
+        
+        return f"Message added to chat: {chat_id}"
+
+    return '''<form method="POST">
+                  Who sends the message?: <input type="text" name="user"><br>
+                  Message: <input type="text" name="message"><br>
                   <input type="submit" value="Submit"><br>
               </form>'''
 

@@ -1,5 +1,5 @@
-from flask import Flask, request
-from database import createUser, createChat, addUser
+from flask import Flask
+from database import createUser, createChat, addUser, addMessage
 
 app = Flask(__name__)
 
@@ -15,6 +15,10 @@ def createChats():
 @app.route('/chat/<chat_id>/adduser', methods=['GET', 'POST']) 
 def addUsers(chat_id):
     return addUser(chat_id)
+
+@app.route('/chat/<chat_id>/addmessage', methods=['GET', 'POST']) 
+def addMessages(chat_id):
+    return addMessage(chat_id)
 
 
 
