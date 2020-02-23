@@ -3,6 +3,7 @@ from errorHandler import jsonErrorHandler
 from bson.json_util import dumps
 from flask import Flask, request
 import re
+from bson.objectid import ObjectId
 
 # Connect to the database
 client = MongoClient("mongodb://localhost:27017")
@@ -43,7 +44,7 @@ def createChat():
         usernames = usernames.split(",")
         exist = []
         dontExist = []
-        toInsert = {"Users": {}}
+        toInsert = {"Users":{}}
         for userna in usernames:
             userna = userna.strip()
             if list(userCol.find({"name": userna}, {"_id" : 1})) == []:
@@ -63,13 +64,13 @@ def createChat():
               </form>'''
 
 @jsonErrorHandler
-def addUser():
+def addUser(chat_id):
     if request.method == 'POST':  #this block is only entered when the form is submitted
         usernames = request.form.get('usernames')
         usernames = usernames.split(",")
         exist = []
         dontExist = []
-        toInsert = {"Users": {}}
+        toUpdate = {"Users":{}}
         for userna in usernames:
             userna = userna.strip()
             if list(userCol.find({"name": userna}, {"_id" : 1})) == []:
@@ -77,16 +78,17 @@ def addUser():
             else:
                 exist.append(userna)
         for userna in exist:
-            toInsert["Users"][f"{userna}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
+            toUpdate["Users"][f"{userna}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
+            chatCol.update({"_id": ObjectId(chat_id)}, {"$set": {f"Users.{userna}" : list(userCol.find({"name": userna}, {"_id" : 1}))[0]}})
             
-        chatCol.insert_one(toInsert)
-        chatID = list(chatCol.find({}).sort([("_id", -1)]).limit(1))[0]["_id"]
-        return '''<h1>Chat created with id: {}</h1>'''.format(chatID)
+        
+        return '''User added'''
 
     return '''<form method="POST">
                   Usernames: <input type="text" name="usernames"><br>
                   <input type="submit" value="Submit"><br>
               </form>'''
+
 
 
 

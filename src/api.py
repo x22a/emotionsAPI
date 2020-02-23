@@ -13,8 +13,8 @@ def createChats():
     return createChat()
 
 @app.route('/chat/<chat_id>/adduser', methods=['GET', 'POST']) 
-def createChats():
-    return addUser()
+def addUsers(chat_id):
+    return addUser(chat_id)
 
 
 
