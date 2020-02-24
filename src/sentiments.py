@@ -5,8 +5,9 @@ from json import dumps as jdumps
 from flask import Flask, request
 from bson.objectid import ObjectId
 import re
+from config import dbURL
 
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient(dbURL)
 database = client["emotionChat"]
 userCol = database["users"]
 chatCol = database["chats"]

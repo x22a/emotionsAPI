@@ -5,10 +5,11 @@ from flask import Flask, request
 from bson.objectid import ObjectId
 from json import dumps as jdumps
 import re
+from config import dbURL
 
 
 # Connect to the database
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient(dbURL)
 database = client["emotionChat"]
 userCol = database["users"]
 chatCol = database["chats"]

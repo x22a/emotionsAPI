@@ -10,8 +10,9 @@ from bson.objectid import ObjectId
 from json import dumps as jdumps
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity as distance
+from config import dbURL
 
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient(dbURL)
 database = client["emotionChat"]
 userCol = database["users"]
 chatCol = database["chats"]
