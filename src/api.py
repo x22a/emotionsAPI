@@ -13,7 +13,7 @@ app = Flask(__name__)
 def landPages():
     return landPage()
 
-@app.route("/user/create/", methods=['GET', 'POST'])
+@app.route("/user/create", methods=['GET', 'POST'])
 def createUsername():
     return createUser()
 
