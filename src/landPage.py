@@ -10,13 +10,13 @@ def landPage():
 </tr>
 <tr>
 <td style="width: 318.5px;">
-<h3 id="&quot;/user/create/&quot;">"/user/create/"</h3>
+<h3 id="&quot;/user/create/&quot;"><a href="/user/create/">"/user/create/"</a></h3>
 </td>
 <td style="width: 318.5px;">CREATE an USER</td>
 </tr>
 <tr>
 <td style="width: 318.5px;">
-<h3 id="&quot;/chat/create/&quot;">"/chat/create/"</h3>
+<h3 id="&quot;/chat/create/&quot;"><a href="/chat/create/">"/chat/create/"</a></h3>
 </td>
 <td style="width: 318.5px;">CREATE a CHAT with the USERS you choose. They have to go in the User field separated by "," (commas)</td>
 </tr>
