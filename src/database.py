@@ -3,7 +3,9 @@ from errorHandler import jsonErrorHandler
 from bson.json_util import dumps
 from flask import Flask, request
 from bson.objectid import ObjectId
+from json import dumps as jdumps
 import re
+
 
 # Connect to the database
 client = MongoClient("mongodb://localhost:27017")
@@ -57,7 +59,7 @@ def createChat():
             toInsert["Users"][f"{userna}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
             
         chatCol.insert_one(toInsert)
-        chatID = list(chatCol.find({}).sort([("_id", -1)]).limit(1))[0]["_id"]
+        chatID = list(chatCol.find({}).sort([("_id", -1)]).limit(1))[0]["_id"] # It returns the ID of the last created chat
         return '''<h1>Chat created with id: {}</h1>'''.format(chatID)
 
     return '''<form method="POST">
@@ -72,7 +74,6 @@ def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
         usernames = usernames.split(",")
         exist = []
         dontExist = []
-        toUpdate = {"Users":{}}
         for userna in usernames:
             userna = userna.strip()
             if list(userCol.find({"name": userna}, {"_id" : 1})) == []:
@@ -82,11 +83,10 @@ def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
         if exist == []:
             raise ValueError("There is no valid users, please go to '/user/create' to add a new user first")
         for userna in exist:
-            #toUpdate["Users"][f"{userna}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
             chatCol.update_one({"_id": ObjectId(chat_id)}, {"$set": {f"Users.{userna}" : list(userCol.find({"name": userna}, {"_id" : 1}))[0]}})
             
         
-        return '''User added'''
+        return f"User {exist} added to chat: {chat_id}"
 
     return '''<form method="POST">
                   Usernames: <input type="text" name="usernames"><br>
@@ -100,22 +100,19 @@ def addMessage(chat_id):
         message = request.form.get('message')
         exist = []
         dontExist = []
-        toUpdate = {"Texts":{}}
         if list(chatCol.find({f"Users.{username}._id": list(userCol.find({"name": f"{username}"}, {"_id" : 1}))[0]["_id"]}, {"_id" : 1})) == []:
             dontExist.append(username)
         else:
             exist.append(username)
         if exist == []:
             raise ValueError("The user is not in the chat, go to '/chat/<chat_id>/adduser' to add an user to this chat")
-            #toUpdate["Texts"][f"msg{n}"] = list(userCol.find({"name": userna}, {"_id" : 1}))[0]
-        try:
+        try: # If there is no messages, the exception will set the first message to 1, else it will take the last message number
             exText = list(chatCol.find({"_id": ObjectId(chat_id)}).sort([("Texts", 1)]).limit(1))[0]["Texts"].keys()
-            exText = list(exText)[-1]
-            exText = list(exText)[-1]
-            lastEl = int(exText)
+            exText = list(exText)[-1] #hay que hacerlo con regex
+            match = re.findall(r"[^msg][0-9]*" ,exText)                            #exText = list(exText)[-1]
+            lastEl = int(match[0])
         except:
             lastEl = 0
-        print(lastEl)
         chatCol.update_one({"_id": ObjectId(chat_id)}, {"$set": {f"Texts.msg{lastEl+1}" : {'name': username, 'text': message}}})
         
         return f"Message added to chat: {chat_id}"
@@ -126,18 +123,21 @@ def addMessage(chat_id):
                   <input type="submit" value="Submit"><br>
               </form>'''
 
+@jsonErrorHandler
+def listaChat(chat_id):
+    exText = list(chatCol.find({"_id": ObjectId(chat_id)}).sort([("Texts", 1)]).limit(1))[0]["Texts"].keys()
+    exText = list(exText)[-1]
+    match = re.findall(r"[^msg][0-9]*" ,exText)
+    lastText = int(match[0])
+    lista = []
+    for e in range(1, lastText+1):
+        try:
+            lista.append((list(chatCol.find({'_id': ObjectId(chat_id)}, {f"Texts.msg{e}.name"}))[0]["Texts"][f"msg{e}"]["name"], list(chatCol.find({'_id': ObjectId(chat_id)}, {f"Texts.msg{e}.text"}))[0]["Texts"][f"msg{e}"]["text"]))
+        except:
+            pass
+    print(lista)
+    return jdumps(lista)
 
 
 
 
-
-
-"""    chatInfo = {'Users': {'user': 'id'},
- 'Texts': {'msg1': {'name': 'juan', 'text': 'hola peña'},
-  'msg2': {'name': 'pepe', 'text': 'que dise juan'},
-  'msg3': {'name': 'xabi', 'text': 'aupa ahí'},
-  'msg4': {'name': 'xabi', 'text': 'a las 7'},
-  'msg5': {'name': 'guille', 'text': 'vamos a por cerve'},
-  'msg6': {'name': 'patri', 'text': 'a las 7'},
-  'msg7': {'name': 'xabi', 'text': 'a las 7'},
-  'msg8': {'name': 'hector', 'text': 'aupa ahí'}}}"""
