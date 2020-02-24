@@ -70,11 +70,11 @@ def createChat():
 @jsonErrorHandler
 def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
     if request.method == 'POST':  #this block is only entered when the form is submitted
-        usernames = request.form.get('usernames')
-        usernames = usernames.split(",")
+        username = request.form.get('usernames')
+        username = username.split(",")
         exist = []
         dontExist = []
-        for userna in usernames:
+        for userna in username:
             userna = userna.strip()
             if list(userCol.find({"name": userna}, {"_id" : 1})) == []:
                 dontExist.append(userna)
@@ -89,7 +89,7 @@ def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
         return f"User {exist} added to chat: {chat_id}"
 
     return '''<form method="POST">
-                  Usernames: <input type="text" name="usernames"><br>
+                  Username: <input type="text" name="username"><br>
                   <input type="submit" value="Submit"><br>
               </form>'''
 
