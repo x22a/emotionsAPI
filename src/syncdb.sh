@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-LOCAL_DB="mongodb://localhost/companies"
+LOCAL_DB="mongodb://localhost/emotionChat"
 
 # Load REMOTE_DB env variable
 source .private.env

@@ -1,7 +1,9 @@
 from flask import Flask
+import os
 from database import createUser, createChat, addUser, addMessage, listaChat
 from sentiments import userSentiment, chatSentiment
 from recomendations import userRecom
+
 
 app = Flask(__name__)
 
@@ -38,5 +40,5 @@ def getSentiments(user):
 def userRecommends(user):
     return userRecom(user)
 
-app.run("0.0.0.0", 5000, debug=True)
+app.run("0.0.0.0", os.getenv("PORT"), debug=True)
 
