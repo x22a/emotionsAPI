@@ -18,6 +18,10 @@ chatCol = database["chats"]
 
 @jsonErrorHandler
 def createUser():
+    """
+    Creates a user if it doesn't exist, else returns invalid input
+    """
+
     if request.method == 'POST':  #this block is only entered when the form is submitted
         username = request.form.get('username')
         if list(userCol.find({"name": username}, {"_id" : 1})) != []:                                           # Checks if the User exists
@@ -42,6 +46,9 @@ def createUser():
 
 @jsonErrorHandler
 def createChat():
+    """
+    Creates a Chat with given Users (They must exist in the database)
+    """
     if request.method == 'POST':  #this block is only entered when the form is submitted
         usernames = request.form.get('usernames')
         usernames = usernames.split(",")
@@ -70,6 +77,9 @@ def createChat():
 
 @jsonErrorHandler
 def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
+    """
+    Adds an User to an existing chat
+    """
     if request.method == 'POST':  #this block is only entered when the form is submitted
         username = request.form.get('usernames')
         username = username.split(",")
@@ -96,6 +106,9 @@ def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
 
 @jsonErrorHandler
 def addMessage(chat_id):
+    """
+    Add a message written by one existing user in that chat
+    """
     if request.method == 'POST':  #this block is only entered when the form is submitted
         username = request.form.get('user')
         message = request.form.get('message')
@@ -126,6 +139,9 @@ def addMessage(chat_id):
 
 @jsonErrorHandler
 def listaChat(chat_id):
+    """
+    Returns all the messages in a given Chat
+    """
     exText = list(chatCol.find({"_id": ObjectId(chat_id)}).sort([("Texts", 1)]).limit(1))[0]["Texts"].keys()
     exText = list(exText)[-1]
     match = re.findall(r"[^msg][0-9]*" ,exText)

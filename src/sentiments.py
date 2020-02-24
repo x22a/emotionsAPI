@@ -15,6 +15,9 @@ chatCol = database["chats"]
 
 @jsonErrorHandler
 def chatSentiment(chat_id):
+    """
+    Returns the emotion index of a given chat
+    """
     exText = list(chatCol.find({"_id": ObjectId(chat_id)}).sort([("Texts", 1)]).limit(1))[0]["Texts"].keys()
     exText = list(exText)[-1]
     match = re.findall(r"[^msg][0-9]*" ,exText)
@@ -33,6 +36,9 @@ def chatSentiment(chat_id):
 
 @jsonErrorHandler
 def userSentiment(user):
+    """
+    Returns the emotion index of a given User
+    """
     sia = SentimentIntensityAnalyzer()
     idLista = list(chatCol.find({}, {"_id": 1}))
     lista = []

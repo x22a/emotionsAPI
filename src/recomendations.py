@@ -20,6 +20,9 @@ chatCol = database["chats"]
 
 @jsonErrorHandler
 def userRecom(user):
+    """
+    Recommends an user to another based on what is written by those users
+    """
     idLista = list(chatCol.find({}, {"_id": 1}))
     userLista = list(userCol.find({}, {"_id": 0, "name": 1}))
     lista = {}

@@ -1,4 +1,8 @@
 def landPage():
+    """
+    Returns an HTML as FrontPage
+    """
+
     return """<h1 style="color: #5e9ca0;">Welcome to chat emotion API!</h1>
 <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
 <h2 style="color: #2e6c80;">Please go to the following endpoints:</h2>
