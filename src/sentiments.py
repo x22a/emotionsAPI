@@ -11,6 +11,7 @@ database = client["emotionChat"]
 userCol = database["users"]
 chatCol = database["chats"]
 
+
 @jsonErrorHandler
 def chatSentiment(chat_id):
     exText = list(chatCol.find({"_id": ObjectId(chat_id)}).sort([("Texts", 1)]).limit(1))[0]["Texts"].keys()
@@ -43,7 +44,6 @@ def userSentiment(user):
         for e in range(1, lastText+1):
             try:
                 lista.append(list(chatCol.find({"$and": [{"_id": ObjectId(chat["_id"])}, {f"Texts.msg{e}.name": user}]}))[0]["Texts"][f"msg{e}"]["text"])
-                print(lista)
             except:
                 pass
     chatPol = sia.polarity_scores(" ".join(lista))
