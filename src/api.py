@@ -3,10 +3,15 @@ import os
 from database import createUser, createChat, addUser, addMessage, listaChat
 from sentiments import userSentiment, chatSentiment
 from recomendations import userRecom
+from landPage import lanpage
 
 
 app = Flask(__name__)
 
+
+@app.route("/", methods=['GET', 'POST'])
+def landPage():
+    return landPage
 
 @app.route("/user/create/", methods=['GET', 'POST'])
 def createUsername():
