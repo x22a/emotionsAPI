@@ -82,6 +82,7 @@ def addUser(chat_id): # FALTA AÑADIR: COMPROBAR SI EL USUARIO YA ESTÁ
     """
     if request.method == 'POST':  #this block is only entered when the form is submitted
         username = request.form.get('usernames')
+        username = username.split(",")
         exist = []
         dontExist = []
         for userna in username:
