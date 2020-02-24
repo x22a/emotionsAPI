@@ -1,4 +1,5 @@
-landpage = """<h1 style="color: #5e9ca0;">Welcome to chat emotion API!</h1>
+def landPage():
+    return """<h1 style="color: #5e9ca0;">Welcome to chat emotion API!</h1>
 <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</p>
 <h2 style="color: #2e6c80;">Please go to the following endpoints:</h2>
 <table style="height: 219px; border-color: #000000;" width="653">
