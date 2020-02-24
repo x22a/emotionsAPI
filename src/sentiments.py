@@ -30,6 +30,7 @@ def chatSentiment(chat_id):
             pass
     sia = SentimentIntensityAnalyzer()
     chatPol = sia.polarity_scores(" ".join(lista))
+    print(chatPol)
     negativity, positivity, compound = chatPol["neg"], chatPol["pos"], chatPol["compound"]
     totaSentiment = "This chat has a negativity of: " + str(negativity) + " A positivity of: " + str(positivity) + " With a total compound of: " + str(compound)
     return jdumps(totaSentiment)
@@ -41,8 +42,10 @@ def userSentiment(user):
     """
     sia = SentimentIntensityAnalyzer()
     idLista = list(chatCol.find({}, {"_id": 1}))
+    print(idLista)
     lista = []
     for chat in idLista:
+        print("chat", chat)
         exText = list(chatCol.find({"_id": ObjectId(chat["_id"])}).sort([("Texts", 1)]).limit(1))[0]["Texts"].keys()
         exText = list(exText)[-1]
         match = re.findall(r"[^msg][0-9]*" ,exText)
@@ -53,7 +56,9 @@ def userSentiment(user):
                 lista.append(list(chatCol.find({"$and": [{"_id": ObjectId(chat["_id"])}, {f"Texts.msg{e}.name": user}]}))[0]["Texts"][f"msg{e}"]["text"])
             except:
                 pass
+    print(lista)
     chatPol = sia.polarity_scores(" ".join(lista))
+    print(chatPol)
     negativity, positivity, compound = chatPol["neg"], chatPol["pos"], chatPol["compound"]
     totaSentiment = f"{user} has a negativity of: " + str(negativity) + " A positivity of: " + str(positivity) + " With a total compound of: " + str(compound)
     return jdumps(totaSentiment)

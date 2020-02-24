@@ -23,7 +23,7 @@ def userRecom(user):
     """
     Recommends an user to another based on what is written by those users
     """
-    idLista = list(chatCol.find({}, {"_id": 1}))
+    idLista = list(chatCol.find({},{"_id": 1}))
     userLista = list(userCol.find({}, {"_id": 0, "name": 1}))
     lista = {}
     for chat in idLista:
@@ -40,6 +40,7 @@ def userRecom(user):
                         lista[use["name"]] += list(chatCol.find({"$and": [{"_id": ObjectId(chat["_id"])}, {f"Texts.msg{e}.name": use["name"]}]}))[0]["Texts"][f"msg{e}"]["text"] + ". "
                 except:
                     pass
+    print(lista)
     docs = lista
     count_vectorizer = CountVectorizer()
     sparse_matrix = count_vectorizer.fit_transform(docs.values())
